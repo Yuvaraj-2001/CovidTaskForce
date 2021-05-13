@@ -113,6 +113,207 @@ function sent(patient, mobile, age, address, symptoms, spo1, spo2, oxygenday, at
     });
     reset();
 }
+function readTask(){
+    firebase.firestore().collection("tasks").onSnapshot(function(snapshot){
+      document.getElementById("cardSection").innerHTML="";
+      snapshot.forEach(function(taskValue){
+          document.getElementById("cardSection").innerHTML +=`
+        <div class="card mb-3">
+          <div class="card-body">
+              <h5 class="card-title">${taskValue.data().task}</h5>
+              <p class="card-test">${taskValue.data().description}</p>
+              <button type="submit" style="color:white" class="btn btn-warning" onclick="updateTask(
+                  '${taskValue.id}','${taskValue.data().task}', '${taskValue.data().description}'
+              )">Edit Task</button>
+              <button type="submit" class="btn btn-danger" onclick="deleteTask('${taskValue.id}')">
+              delete</button>
+          </div>
+         </div>`
+      });
+        
+    });
+}
+function patientDetails(){
+    let arr = [];
+    document.getElementById("load").style.display = "block";
+    debugger 
+    firebase.firestore().collection("CovidTaskForce").onSnapshot(function(snapshot){
+        snapshot.forEach(function(taskValue){
+            var id = taskValue.id;
+            var patient =  {
+                id: id,
+                PatientName: taskValue.data().PatientName,
+                MobileNo: taskValue.data().MobileNo,
+                Age: taskValue.data().Age,
+                Address: taskValue.data().Address,
+                Symptoms: taskValue.data().Symptoms,
+                SPO1: taskValue.data().SPO1,
+                SPO2: taskValue.data().SPO2,
+                OxygenDay: taskValue.data().OxygenDay,
+                AttenderMobile: taskValue.data().AttenderMobile,
+                Relation: taskValue.data().Relation,
+                BUno: taskValue.data().BUno,
+                SRFID: taskValue.data().SRFID,
+                Gender: taskValue.data().Gender,
+                Hospital: taskValue.data().Hospital,
+                OxyCylinder: taskValue.data().OxyCylinder,
+                covidstatus: taskValue.data().covidstatus
+            }
+            arr.push(patient)
+            console.log(patient)
+            
+        })
+        console.log(arr, arr[0])
+        document.getElementById("patients").innerHTML="";
+        debugger
+        for(let i = 0; i < arr.length; i++){
+            document.getElementById("patients").innerHTML +=`
+            
+                <div class="card mb-3">
+                    <div class="card-body">
+                    <h5 class="card-title">Patient Name: ${arr[i].PatientName}</h5>
+                    <p class="card-test">Address: ${arr[i].Address}</p>
+                    <button type="submit" style="color:white" class="btn btn-success" 
+                    onclick="showMore('${arr[i].id}')">More details here</button>
+                    </div>
+                 </div>`
+        }
+        document.getElementById("load").style.display = "none"; 
+    })
+    
+}
+function showMore(idOfparticular){
+    document.getElementById("load").style.display = "block";
+    let arr = [];
+    var ParticularPatient = [];
+    firebase.firestore().collection("CovidTaskForce").onSnapshot(function(snapshot){
+        snapshot.forEach(function(taskValue){
+            var id = taskValue.id;
+            var patient =  {
+                id: id,
+                PatientName: taskValue.data().PatientName,
+                MobileNo: taskValue.data().MobileNo,
+                Age: taskValue.data().Age,
+                Address: taskValue.data().Address,
+                Symptoms: taskValue.data().Symptoms,
+                SPO1: taskValue.data().SPO1,
+                SPO2: taskValue.data().SPO2,
+                OxygenDay: taskValue.data().OxygenDay,
+                AttenderMobile: taskValue.data().AttenderMobile,
+                Relation: taskValue.data().Relation,
+                BUno: taskValue.data().BUno,
+                SRFID: taskValue.data().SRFID,
+                Gender: taskValue.data().Gender,
+                Hospital: taskValue.data().Hospital,
+                OxyCylinder: taskValue.data().OxyCylinder,
+                covidstatus: taskValue.data().covidstatus
+            }
+            arr.push(patient)
+            console.log(patient)
+            
+        })
+        for(let i = 0; i < arr.length; i++){
+            if(arr[i].id == idOfparticular ){
+                ParticularPatient.push(arr[i])
+            }
+        }
+        console.log(ParticularPatient);
+        document.getElementById("onepatient").style.display = "block"; 
+        document.getElementById("patients").style.display = "none";                   
+        document.getElementById("onepatient").innerHTML = `
+        <h4>Details of Patient ${ParticularPatient[0].PatientName}</h4>
+        <table class="table table-striped">
+    <thead>  
+      <tr>
+        <th></th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th>PatientName:</th>
+        <th>
+        ${ParticularPatient[0].PatientName}</th>
+      </tr> 
+      <tr>
+      <td>Covid Status:</td>
+      <td>
+      ${ParticularPatient[0].covidstatus}</td>
+    </tr>
+      <tr>
+        <td>Gender:</td>
+        <td>
+        ${ParticularPatient[0].Gender}</td>
+      </tr>
+      <tr>
+        <td> MobileNo:</td>
+        <td> ${ParticularPatient[0].MobileNo}</td>
+      </tr>
+      <tr>
+        <td>Age: </td>
+        <td>${ParticularPatient[0].Age}</td>
+      </tr>
+      <tr>
+        <td>Address:</td>
+        <td>${ParticularPatient[0].Address}</td>
+      </tr>
+      <tr>
+        <td>Symptoms: </td>
+        <td>${ParticularPatient[0].Symptoms}</td>
+      </tr>
+      <tr>
+        <td>SPO2 Level without oxygen: </td>
+        <td>${ParticularPatient[0].SPO1}</td>
+      </tr>
+      <tr>
+        <td>SPO2 Level with oxygen: </td>
+        <td>${ParticularPatient[0].SPO2}</td>
+      </tr>
+      <tr>
+        <td>Is patient on oxygen cylinder: </td>
+        <td>${ParticularPatient[0].OxyCylinder}</td>
+      </tr>
+      <tr>
+        <td>Since how many days?: </td>
+        <td>${ParticularPatient[0].OxygenDay}</td>
+      </tr>
+      <tr>
+        <td>Attender mobile no: </td>
+        <td>${ParticularPatient[0].AttenderMobile}</td>
+      </tr>
+      <tr>
+        <td>Relation to patient: </td>
+        <td>${ParticularPatient[0].Relation}</td>
+      </tr>
+      <tr>
+        <td>Preferable hospital: </td>
+        <td>${ParticularPatient[0].Hospital}</td>
+      </tr>
+      <tr>
+        <td>BU number: </td>
+        <td>${ParticularPatient[0].BUno}</td>
+      </tr>
+      
+      <tr>
+        <td>SRF ID: </td>
+        <td>${ParticularPatient[0].SRFID}</td>
+      </tr> 
+      
+    </tbody>
+  </table>
+  <button class="btn btn-block btn-danger" onclick="closefun();"> Back to patient details </button>
+        `;  
+
+
+    })
+    document.getElementById("load").style.display = "none";
+}
+function closefun(){
+    debugger
+    document.getElementById("onepatient").style.display = "none";
+    document.getElementById("patients").style.display = "block";                   
+    
+}
 
 function reset(){
     document.getElementById("patient").value = "";
